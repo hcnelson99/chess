@@ -30,11 +30,19 @@ const cardinal = cross_product(dirs, dirs).filter(
 );
 
 function bishop(x: number, y: number): Piece {
-  return { pos : vec(x, y), display: "B", moveSet: { kind: "beam", dirs: diags } };
+  return {
+    pos: vec(x, y),
+    display: "B",
+    moveSet: { kind: "beam", dirs: diags },
+  };
 }
 
 function king(x: number, y: number): Piece {
-  return { pos: vec(x, y), display: "K", moveSet: { kind: "step", dirs: cardinal } };
+  return {
+    pos: vec(x, y),
+    display: "K",
+    moveSet: { kind: "step", dirs: cardinal },
+  };
 }
 
 const pieces: Piece[] = [king(0, 0), king(3, 5), bishop(2, 4)];
@@ -58,7 +66,7 @@ function moves(pos: Vec, moveSet: MoveSet): Vec[] {
       for (const d of moveSet.dirs) {
         let i = 1;
         while (true) {
-          const m = mult(d, i);
+          const m = add(pos, mult(d, i));
           if (!inBounds(m)) break;
           moves.push(m);
           i++;
@@ -91,20 +99,21 @@ function renderSquare(pos: Vec, piece: Piece | null, isMove: boolean) {
   }
 
   const sel = selectedPiece;
-  if (sel != null && isMove) {
+  if (sel != null && piece == null && isMove) {
+    sq.classList.add("target");
     sq.onclick = () => {
       sel.pos = pos;
       selectedPiece = null;
       render();
     };
-  } else if (piece != null) {
+  }
+  if (piece != null) {
     sq.onclick = () => {
       selectedPiece = piece;
       render();
     };
   }
 
-  if (isMove) sq.classList.add("target");
   return sq;
 }
 
@@ -126,3 +135,4 @@ function render() {
 }
 
 render();
+console.log(diags);
