@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chess Puzzle</title>
+    <style>
+      body { display: grid; place-items: center; min-height: 100vh; margin: 0; background: #222; }
+      #board { display: grid; grid-template-columns: repeat(8, 64px); }
+      .sq { width: 64px; height: 64px; display: grid; place-items: center; font-size: 48px; cursor: pointer; user-select: none; }
+      .light { background: #eee; }
+      .dark { background: #666; }
+      .target::after { content: ""; width: 20px; height: 20px; border-radius: 50%; background: #0004; }
+    </style>
+  </head>
+  <body>
+    <div id="board"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
