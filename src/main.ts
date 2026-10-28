@@ -39,13 +39,17 @@ const diags = crossProduct([-1, 1], [-1, 1]);
 const orths = [vec(0, 1), vec(1, 0), vec(-1, 0), vec(0, -1)];
 const allDirs = [...orths, ...diags];
 
-function piece(display: string, moveSet: MoveSet) {
-  return (x: number, y: number): Piece => ({ pos: vec(x, y), display, moveSet });
+function pieceType(display: string, moveSet: MoveSet) {
+  return (x: number, y: number): Piece => ({
+    pos: vec(x, y),
+    display,
+    moveSet,
+  });
 }
 
-const jumpBishop = piece("B", { kind: "furthest", dirs: diags });
-const jumpRook = piece("R", { kind: "furthest", dirs: orths });
-const king = piece("K", { kind: "step", dirs: allDirs });
+const jumpBishop = pieceType("B", { kind: "furthest", dirs: diags });
+const jumpRook = pieceType("R", { kind: "furthest", dirs: orths });
+const king = pieceType("K", { kind: "step", dirs: allDirs });
 
 const levels: Record<string, Level> = {
   "01. rooks 1": {
@@ -113,22 +117,30 @@ function occupied(pos: Vec) {
   return !inBounds(pos) || pieceAt(pos) != null;
 }
 
-function moves({ pos, moveSet: { kind, dirs } }: Piece): Vec[] {
-  const result: Vec[] = [];
-  for (const d of dirs) {
-    if (kind === "step") {
-      const m = add(pos, d);
-      if (!occupied(m)) result.push(m);
-    } else {
-      let m = pos;
-      while (!occupied(add(m, d))) {
-        m = add(m, d);
-        if (kind === "beam") result.push(m);
-      }
-      if (kind === "furthest" && m !== pos) result.push(m);
+function assertNever(x: never): never {
+  throw new Error(`Unexpected value: ${JSON.stringify(x)}`);
+}
+
+// Free squares from `pos` in direction `d`, up to the first obstacle.
+function ray(pos: Vec, d: Vec): Vec[] {
+  const squares: Vec[] = [];
+  for (let m = add(pos, d); !occupied(m); m = add(m, d)) squares.push(m);
+  return squares;
+}
+
+function moves({ pos, moveSet }: Piece): Vec[] {
+  return moveSet.dirs.flatMap((d) => {
+    switch (moveSet.kind) {
+      case "step":
+        return ray(pos, d).slice(0, 1);
+      case "beam":
+        return ray(pos, d);
+      case "furthest":
+        return ray(pos, d).slice(-1);
+      default:
+        return assertNever(moveSet.kind);
     }
-  }
-  return result;
+  });
 }
 
 function renderSquare(pos: Vec, piece: Piece | null, isMove: boolean) {
