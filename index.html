@@ -4,15 +4,22 @@
     <meta charset="UTF-8" />
     <title>Chess Puzzle</title>
     <style>
-      body { display: grid; place-items: center; min-height: 100vh; margin: 0; background: #222; }
+      body { display: grid; place-items: center; min-height: 100vh; margin: 0; background: #222; align-content: center; gap: 12px; }
       #board { display: grid; grid-template-columns: repeat(8, 64px); }
       .sq { width: 64px; height: 64px; display: grid; place-items: center; font-size: 48px; cursor: pointer; user-select: none; }
       .light { background: #eee; }
       .dark { background: #666; }
+      .light.goal { background: #9c9; }
+      .dark.goal { background: #586; }
       .target::after { content: ""; width: 20px; height: 20px; border-radius: 50%; background: #0004; }
     </style>
   </head>
   <body>
+    <div>
+      <select id="level"></select>
+      <button type="button" id="undo">Undo (Z)</button>
+      <button type="button" id="reset">Reset (R)</button>
+    </div>
     <div id="board"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
